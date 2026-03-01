@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Gold Tracker iPad 3</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.min.js"></script>
+
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .header {
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            -webkit-border-radius: 15px;
+            border-radius: 15px;
+            padding: 20px 10px;
+            margin-bottom: 15px;
+        }
+
+        .label {
+            color: #888;
+            font-size: 16px;
+        }
+
+        .price-main {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 10px 0;
+        }
+
+        .price-sub {
+            font-size: 18px;
+            color: #aaa;
+        }
+
+        /* กล่องกราฟ */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            background-color: #111;
+            -webkit-border-radius: 15px;
+            border-radius: 15px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .status {
+            font-size: 12px;
+            color: #444;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h2 style="margin:0">GOLD <span style="color:#d4af37">TRACKER</span></h2>
+    </div>
+
+    <div class="card">
+        <div class="label">ฮั่วเซ่งเฮง (ขายออก)</div>
+        <div id="hsh-price" class="price-main">-- , ---</div>
+        <div class="price-sub">สมาคม: <span id="ref-price" style="color:#fff">-- , ---</span></div>
+    </div>
+
+    <div class="card" style="padding: 10px;">
+        <div class="label" style="margin-bottom:10px;">Trend 24 Hours (Spot)</div>
+        <div class="chart-container">
+            <canvas id="historyChart"></canvas>
+        </div>
+    </div>
+
+    <div id="update-time" class="status">Connecting...</div>
+
+    <script type="text/javascript">
+        var historyChart = null;
+        var proxyUrl = "https://script.google.com/macros/s/AKfycbxwykNCUgzYBusuUfmanwPJtwgFbBSvJQ839FUL2lm6EyNKFkxeT60lt-tIq2EXv3Cp/exec";
+
+        // ฟังก์ชันดึงข้อมูลราคา (HSH & REF)
+        function fetchPrices() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", proxyUrl, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    document.getElementById("hsh-price").innerHTML = data[0].Sell + " ฿";
+                    document.getElementById("ref-price").innerHTML = data[1].Sell + " ฿";
+                    document.getElementById("update-time").innerHTML = "Updated: " + new Date().toLocaleTimeString();
+                }
+            };
+            xhr.send();
+        }
+
+        // ฟังก์ชันดึงกราฟ 24 ชม. จาก Coinbase
+        function fetchChart() {
+            var xhr = new XMLHttpRequest();
+            // granularity 3600 = 1 hour
+            xhr.open("GET", "https://api.exchange.coinbase.com/products/PAXG-USD/candles?granularity=3600", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var rawData = JSON.parse(xhr.responseText);
+                    var last24 = rawData.slice(0, 24).reverse();
+
+                    var labels = [];
+                    var prices = [];
+
+                    for (var i = 0; i < last24.length; i++) {
+                        var d = new Date(last24[i][0] * 1000);
+                        labels.push(d.getHours() + ":00");
+                        prices.push(last24[i][4]); // Close Price
+                    }
+
+                    renderChart(labels, prices);
+                }
+            };
+            xhr.send();
+        }
+
+        function renderChart(labels, data) {
+            var ctx = document.getElementById('historyChart').getContext('2d');
+
+            // ตรวจสอบเทรนด์เพื่อเลือกสี (ขึ้นเขียว ลงแดง)
+            var isUp = data[data.length - 1] >= data[0];
+            var color = isUp ? "#00ff88" : "#ff4444";
+            var bgColor = isUp ? "rgba(0,255,136,0.1)" : "rgba(255,68,68,0.1)";
+
+            if (historyChart) { historyChart.destroy(); }
+
+            historyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: bgColor,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: true,
+                        lineTension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: { display: false },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            gridLines: { display: false },
+                            ticks: { fontColor: "#555", fontSize: 10, maxTicksLimit: 6 }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            gridLines: { color: "#222" },
+                            ticks: { fontColor: "#555", fontSize: 10, maxTicksLimit: 5 }
+                        }]
+                    }
+                }
+            });
+        }
+
+        // เริ่มทำงาน
+        fetchPrices();
+        fetchChart();
+
+        // ตั้งเวลาอัปเดต (30 วินาทีสำหรับราคา / 5 นาทีสำหรับกราฟ เพื่อลดภาระเครื่อง)
+        setInterval(fetchPrices, 30000);
+        setInterval(fetchChart, 300000);
+    </script>
+</body>
+
+</html>
