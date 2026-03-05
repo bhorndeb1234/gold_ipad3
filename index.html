@@ -1,160 +1,281 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>Gold Tracker iPad 3</title>
-
+    <title>HSH Gold Tracker iPad 3</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.min.js"></script>
-
     <style>
         body {
-            background-color: #000000;
-            color: #ffffff;
-            font-family: Helvetica, Arial, sans-serif;
+            background-color: #111827;
+            color: white;
+            font-family: sans-serif;
             margin: 0;
-            padding: 15px;
-            text-align: center;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
         }
 
         .header {
-            border-bottom: 2px solid #d4af37;
-            padding-bottom: 10px;
+            color: #f59e0b;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
             margin-bottom: 20px;
         }
 
         .card {
-            background-color: #1a1a1a;
-            border: 1px solid #333;
-            -webkit-border-radius: 15px;
+            background-color: #374151;
             border-radius: 15px;
-            padding: 20px 10px;
+            padding: 15px;
             margin-bottom: 15px;
+            text-align: center;
         }
 
         .label {
-            color: #888;
-            font-size: 16px;
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 5px;
         }
 
-        .price-main {
-            font-size: 48px;
-            font-weight: bold;
-            color: #ffd700;
-            margin: 10px 0;
-        }
-
-        .price-sub {
-            font-size: 18px;
-            color: #aaa;
-        }
-
-        /* กล่องกราฟ */
-        .chart-container {
-            position: relative;
-            height: 250px;
+        .flex-row {
+            display: table;
             width: 100%;
-            background-color: #111;
-            -webkit-border-radius: 15px;
+        }
+
+        .flex-col {
+            display: table-cell;
+            width: 50%;
+            vertical-align: middle;
+        }
+
+        .divider {
+            border-left: 1px solid #4b5563;
+            height: 50px;
+            display: table-cell;
+        }
+
+        .price-red {
+            color: #ef4444;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .price-green {
+            color: #10b981;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .price-white {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .grid {
+            display: block;
+            overflow: hidden;
+        }
+
+        .grid-item {
+            float: left;
+            width: 48%;
+            background: #374151;
             border-radius: 15px;
+            padding: 10px 1%;
+            margin: 1%;
+            box-sizing: border-box;
+        }
+
+        .chart-box {
+            background: #1f2937;
+            border-radius: 10px;
             padding: 10px;
-            margin-top: 10px;
+            margin-top: 15px;
+            height: 250px;
         }
 
         .status {
+            color: #6b7280;
             font-size: 12px;
-            color: #444;
-            margin-top: 15px;
+            font-style: italic;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        button {
+            width: 100%;
+            background: #b45309;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
         }
     </style>
 </head>
 
 <body>
+    <div class="container">
+        <div class="header">ฮั่วเซ่งเฮง</div>
 
-    <div class="header">
-        <h2 style="margin:0">GOLD <span style="color:#d4af37">TRACKER</span></h2>
-    </div>
+        <div class="card">
+            <div class="label">ทองแท่ง 96.5%</div>
+            <div class="flex-row">
+                <div class="flex-col">
+                    <div style="color:#f87171">รับซื้อ</div>
+                    <div id="bid965" class="price-red">---</div>
+                </div>
+                <div class="divider"></div>
+                <div class="flex-col">
+                    <div style="color:#34d399">ขายออก</div>
+                    <div id="ask965" class="price-green">---</div>
+                </div>
+            </div>
+        </div>
 
-    <div class="card">
-        <div class="label">ฮั่วเซ่งเฮง (ขายออก)</div>
-        <div id="hsh-price" class="price-main">-- , ---</div>
-        <div class="price-sub">สมาคม: <span id="ref-price" style="color:#fff">-- , ---</span></div>
-    </div>
+        <div class="card">
+            <div class="label">สมาคม 96.5%</div>
+            <div class="flex-row">
+                <div class="flex-col">
+                    <div style="color:#f87171">รับซื้อ</div>
+                    <div id="BidAssociation" class="price-red">---</div>
+                </div>
+                <div class="divider"></div>
+                <div class="flex-col">
+                    <div style="color:#34d399">ขายออก</div>
+                    <div id="AskAssociation" class="price-green">---</div>
+                </div>
+            </div>
+        </div>
 
-    <div class="card" style="padding: 10px;">
-        <div class="label" style="margin-bottom:10px;">Trend 24 Hours (Spot)</div>
-        <div class="chart-container">
+        <div class="grid">
+            <div class="grid-item">
+                <div class="label">Spot Gold ($)</div>
+                <div id="spot" class="price-white" style="font-size: 24px;">---</div>
+            </div>
+            <div class="grid-item">
+                <div class="label">USD/THB</div>
+                <div id="fx" class="price-white" style="font-size: 24px;">---</div>
+            </div>
+        </div>
+
+        <div class="chart-box">
+            <div style="color:#ffd700; text-align:center; font-size:14px; margin-bottom:5px;">Spot Gold Trend (24h)
+            </div>
             <canvas id="historyChart"></canvas>
         </div>
+
+        <p id="updateTime" class="status">กำลังโหลดข้อมูล...</p>
+        <button onclick="fetchAllData()">Refresh Now</button>
     </div>
 
-    <div id="update-time" class="status">Connecting...</div>
-
-    <script type="text/javascript">
+    <script>
         var historyChart = null;
+        var oldSpotPrice = 0;
+        var fxRate = 0;
+        // *** สำคัญ: ใส่ URL Google Apps Script Proxy ของคุณที่นี่ ***
         var proxyUrl = "https://script.google.com/macros/s/AKfycbxwykNCUgzYBusuUfmanwPJtwgFbBSvJQ839FUL2lm6EyNKFkxeT60lt-tIq2EXv3Cp/exec";
 
-        // ฟังก์ชันดึงข้อมูลราคา (HSH & REF)
-        function fetchPrices() {
+        function fetchAllData() {
+            fetchHSH();
+            fetchFX();
+            fetchSpot();
+            fetchHistory();
+        }
+
+        // ดึงราคาไทยผ่าน Proxy (เลี่ยง CORS บน iPad)
+        function fetchHSH() {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", proxyUrl, true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     var data = JSON.parse(xhr.responseText);
-                    document.getElementById("hsh-price").innerHTML = data[0].Sell + " ฿";
-                    document.getElementById("ref-price").innerHTML = data[1].Sell + " ฿";
-                    document.getElementById("update-time").innerHTML = "Updated: " + new Date().toLocaleTimeString();
+                    // ปรับตามรูปแบบ JSON ของคุณ
+                    document.getElementById('ask965').innerText = data[0].Sell;
+                    document.getElementById('bid965').innerText = data[0].Buy || "---";
+                    document.getElementById('AskAssociation').innerText = data[1].Sell;
+                    document.getElementById('BidAssociation').innerText = data[1].Buy || "---";
+                    document.getElementById('updateTime').innerText = "อัปเดตล่าสุด: " + new Date().toLocaleTimeString();
                 }
             };
             xhr.send();
         }
 
-        // ฟังก์ชันดึงกราฟ 24 ชม. จาก Coinbase
-        function fetchChart() {
+        function fetchFX() {
             var xhr = new XMLHttpRequest();
-            // granularity 3600 = 1 hour
+            xhr.open("GET", "https://api.coinbase.com/v2/exchange-rates?currency=USD", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var res = JSON.parse(xhr.responseText);
+                    fxRate = parseFloat(res.data.rates.THB);
+                    document.getElementById('fx').innerText = fxRate.toFixed(2);
+                }
+            };
+            xhr.send();
+        }
+
+        function fetchSpot() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://api.coinbase.com/v2/prices/PAXG-USD/spot", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var res = JSON.parse(xhr.responseText);
+                    var price = parseFloat(res.data.amount);
+                    var el = document.getElementById('spot');
+                    el.innerText = price.toFixed(2);
+                    if (oldSpotPrice > 0) {
+                        el.style.color = (price > oldSpotPrice) ? "#4ade80" : (price < oldSpotPrice ? "#f87171" : "white");
+                    }
+                    oldSpotPrice = price;
+                }
+            };
+            xhr.send();
+        }
+
+        function fetchHistory() {
+            var xhr = new XMLHttpRequest();
             xhr.open("GET", "https://api.exchange.coinbase.com/products/PAXG-USD/candles?granularity=3600", true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
-                    var rawData = JSON.parse(xhr.responseText);
-                    var last24 = rawData.slice(0, 24).reverse();
-
+                    var data = JSON.parse(xhr.responseText).slice(0, 24).reverse();
                     var labels = [];
                     var prices = [];
-
-                    for (var i = 0; i < last24.length; i++) {
-                        var d = new Date(last24[i][0] * 1000);
+                    for (var i = 0; i < data.length; i++) {
+                        var d = new Date(data[i][0] * 1000);
                         labels.push(d.getHours() + ":00");
-                        prices.push(last24[i][4]); // Close Price
+                        prices.push(data[i][4]);
                     }
-
                     renderChart(labels, prices);
                 }
             };
             xhr.send();
         }
 
-        function renderChart(labels, data) {
+        function renderChart(labels, prices) {
             var ctx = document.getElementById('historyChart').getContext('2d');
+            var isUp = prices[prices.length - 1] >= prices[0];
+            var color = isUp ? '#00ff88' : '#ff4444';
 
-            // ตรวจสอบเทรนด์เพื่อเลือกสี (ขึ้นเขียว ลงแดง)
-            var isUp = data[data.length - 1] >= data[0];
-            var color = isUp ? "#00ff88" : "#ff4444";
-            var bgColor = isUp ? "rgba(0,255,136,0.1)" : "rgba(255,68,68,0.1)";
-
-            if (historyChart) { historyChart.destroy(); }
-
+            if (historyChart) historyChart.destroy();
             historyChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        data: data,
+                        data: prices,
                         borderColor: color,
-                        backgroundColor: bgColor,
+                        backgroundColor: isUp ? 'rgba(0,255,136,0.1)' : 'rgba(255,68,68,0.1)',
                         borderWidth: 2,
                         pointRadius: 0,
                         fill: true,
@@ -166,29 +287,18 @@
                     maintainAspectRatio: false,
                     legend: { display: false },
                     scales: {
-                        xAxes: [{
-                            display: true,
-                            gridLines: { display: false },
-                            ticks: { fontColor: "#555", fontSize: 10, maxTicksLimit: 6 }
-                        }],
-                        yAxes: [{
-                            display: true,
-                            gridLines: { color: "#222" },
-                            ticks: { fontColor: "#555", fontSize: 10, maxTicksLimit: 5 }
-                        }]
+                        xAxes: [{ ticks: { fontColor: '#666', fontSize: 10, maxTicksLimit: 6 }, gridLines: { display: false } }],
+                        yAxes: [{ ticks: { fontColor: '#666', fontSize: 10 }, gridLines: { color: '#333' } }]
                     }
                 }
             });
         }
 
-        // เริ่มทำงาน
-        fetchPrices();
-        fetchChart();
-
-        // ตั้งเวลาอัปเดต (30 วินาทีสำหรับราคา / 5 นาทีสำหรับกราฟ เพื่อลดภาระเครื่อง)
-        setInterval(fetchPrices, 30000);
-        setInterval(fetchChart, 300000);
+        // เริ่มต้นทำงาน
+        fetchAllData();
+        setInterval(fetchAllData, 60000); // อัปเดตทุก 1 นาที
     </script>
 </body>
+  
 
 </html>
