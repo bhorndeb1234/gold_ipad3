@@ -185,7 +185,7 @@
         var oldSpotPrice = 0;
         var fxRate = 0;
         // *** สำคัญ: ใส่ URL Google Apps Script Proxy ของคุณที่นี่ ***
-        var proxyUrl = "https://script.google.com/macros/s/AKfycbxwykNCUgzYBusuUfmanwPJtwgFbBSvJQ839FUL2lm6EyNKFkxeT60lt-tIq2EXv3Cp/exec";
+        var proxyUrl = "https://script.google.com/macros/s/AKfycbwYGBFnfZfb-3EwUhCQ5S74tzN9OG7PsyO9Cstf204/dev";
 
         function fetchAllData() {
             fetchHSH();
@@ -194,29 +194,29 @@
             fetchHistory();
         }
 
-    // *** สำคัญที่สุด: ใส่ URL ของ Google Apps Script ที่คุณ Deploy ไว้ที่นี่ ***
-    var proxyUrl = "https://script.google.com/macros/s/AKfycbw1WqRkT2AZkSAQ90tobzWsIeZbi5OPVYqN_k70q3kgYm_SBKooUdyMe8PIWgcmMTYO/exec";
+        // *** สำคัญที่สุด: ใส่ URL ของ Google Apps Script ที่คุณ Deploy ไว้ที่นี่ ***
+        //         var proxyUrl = "https://script.google.com/macros/s/AKfycbwYGBFnfZfb-3EwUhCQ5S74tzN9OG7PsyO9Cstf204/dev";
 
-    function fetchHSH() {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", proxyUrl, true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                try {
-                    var data = JSON.parse(xhr.responseText);
-                    // data[0] คือ HSH, data[1] คือ REF (สมาคม)
-                    document.getElementById('ask965').innerText = data[0].Sell;
-                    document.getElementById('bid965').innerText = data[0].Buy;
-                    document.getElementById('AskAssociation').innerText = data[1].Sell;
-                    document.getElementById('BidAssociation').innerText = data[1].Buy;
-                    document.getElementById('updateTime').innerText = "อัปเดตล่าสุด: " + new Date().toLocaleTimeString();
-                } catch (e) {
-                    console.log("JSON Parse Error");
+        function fetchHSH() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", proxyUrl, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        // data[0] คือ HSH, data[1] คือ REF (สมาคม)
+                        document.getElementById('ask965').innerText = data[0].Sell;
+                        document.getElementById('bid965').innerText = data[0].Buy;
+                        document.getElementById('AskAssociation').innerText = data[1].Sell;
+                        document.getElementById('BidAssociation').innerText = data[1].Buy;
+                        document.getElementById('updateTime').innerText = "อัปเดตล่าสุด: " + new Date().toLocaleTimeString();
+                    } catch (e) {
+                        console.log("JSON Parse Error");
+                    }
                 }
-            }
-        };
-        xhr.send();
-    }
+            };
+            xhr.send();
+        }
 
         function fetchFX() {
             var xhr = new XMLHttpRequest();
