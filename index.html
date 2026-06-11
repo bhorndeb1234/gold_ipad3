@@ -186,7 +186,7 @@
         var oldSpotPrice = 0;
         var fxRate = 0;
         // *** สำคัญ: ใส่ URL Google Apps Script Proxy ของคุณที่นี่ ***
-        var proxyUrl = "https://script.google.com/macros/s/AKfycbxwykNCUgzYBusuUfmanwPJtwgFbBSvJQ839FUL2lm6EyNKFkxeT60lt-tIq2EXv3Cp/exec";
+        var proxyUrl = "https://script.google.com/macros/s/AKfycbwONsxmr3VZ-JIDKZtoqVgqB1jnV6WQuzuQvnchfb5K4FTqkbjpyLX9A842db9lMafs/exec";
 
         function fetchAllData() {
             fetchHSH();
@@ -217,12 +217,12 @@
 
                         if (hshItem) {
                             document.getElementById('ask965').innerText = hshItem.Sell || '---';
-                            document.getElementById('bid965').innerText = hshItem.Buy || '---';
+                            document.getElementById('bid965').innerText = (hshItem.Buy || hshItem.Sell || '---');
                         }
 
                         if (refItem) {
                             document.getElementById('AskAssociation').innerText = refItem.Sell || '---';
-                            document.getElementById('BidAssociation').innerText = refItem.Buy || '---';
+                            document.getElementById('BidAssociation').innerText = (refItem.Buy || refItem.Sell || '---');
                         }
 
                         document.getElementById('updateTime').innerText = "อัปเดตล่าสุด: " + new Date().toLocaleTimeString();
