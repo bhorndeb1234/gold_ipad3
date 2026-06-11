@@ -204,15 +204,31 @@
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     try {
-                        var data = JSON.parse(xhr.responseText);
-                        // data[0] คือ HSH, data[1] คือ REF (สมาคม)
-                        document.getElementById('ask965').innerText = data[0].Sell;
-                        document.getElementById('bid965').innerText = data[0].Buy;
-                        document.getElementById('AskAssociation').innerText = data[1].Sell;
-                        document.getElementById('BidAssociation').innerText = data[1].Buy;
+                        var payload = JSON.parse(xhr.responseText);
+                        var data = Array.isArray(payload) ? payload : (payload.data || payload.items || payload.result || []);
+
+                        var hshItem = null;
+                        var refItem = null;
+
+                        if (Array.isArray(data)) {
+                            hshItem = data.find(function (item) { return item.GoldType === 'HSH'; }) || data[0];
+                            refItem = data.find(function (item) { return item.GoldType === 'REF'; }) || data[1];
+                        }
+
+                        if (hshItem) {
+                            document.getElementById('ask965').innerText = hshItem.Sell || '---';
+                            document.getElementById('bid965').innerText = hshItem.Buy || '---';
+                        }
+
+                        if (refItem) {
+                            document.getElementById('AskAssociation').innerText = refItem.Sell || '---';
+                            document.getElementById('BidAssociation').innerText = refItem.Buy || '---';
+                        }
+
                         document.getElementById('updateTime').innerText = "อัปเดตล่าสุด: " + new Date().toLocaleTimeString();
                     } catch (e) {
-                        console.log("JSON Parse Error");
+                        console.log("JSON Parse Error", e);
+                        document.getElementById('updateTime').innerText = 'Data Error';
                     }
                 }
             };
