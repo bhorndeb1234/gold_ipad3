@@ -1,0 +1,10 @@
+{
+  "name": "gold-ipad3",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 3000",
+    "open": "open http://localhost:3000"
+  },
+  "description": "Static gold tracker page for local preview"
+}
