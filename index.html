@@ -38,46 +38,51 @@
 
         .label {
             color: #9ca3af;
-            font-size: 14px;
+            font-size: clamp(12px, 3vw, 14px);
             margin-bottom: 1px;
         }
 
         .flex-row {
-            display: table;
+            display: block;
             width: 100%;
+            overflow: hidden;
         }
 
         .flex-col {
-            display: table-cell;
-            width: 50%;
+            float: left;
+            width: 48%;
             vertical-align: middle;
+            box-sizing: border-box;
+            margin: 1%;
         }
 
         .divider {
-            border-left: 1px solid #4b5563;
-            height: 50px;
-            display: table-cell;
+            display: none;
+        }
+
+        .price-red,
+        .price-green,
+        .price-white {
+            color: inherit;
+            display: block;
+            width: 100%;
+            white-space: nowrap;
+            font-size: clamp(18px, 5vw, 42px);
+            font-weight: bold;
+            margin: 1px 0;
+            line-height: 1.1;
         }
 
         .price-red {
             color: #ef4444;
-            font-size: 4vw;
-            font-weight: bold;
-            margin: 1px 0;
         }
 
         .price-green {
             color: #10b981;
-            font-size: 4vw;
-            font-weight: bold;
-            margin: 1px 0;
         }
 
         .price-white {
             color: white;
-            font-size: 3vw;
-            font-weight: bold;
-            margin: 1px 0;
         }
 
         .grid {
@@ -164,11 +169,11 @@
         <div class="grid">
             <div class="grid-item">
                 <div class="label">Spot Gold ($)</div>
-                <div id="spot" class="price-white" style="font-size: 44px;">---</div>
+                <div id="spot" class="price-white">---</div>
             </div>
             <div class="grid-item">
                 <div class="label">USD/THB</div>
-                <div id="fx" class="price-white" style="font-size: 44px;">---</div>
+                <div id="fx" class="price-white">---</div>
             </div>
         </div>
 
@@ -205,8 +210,16 @@
             var refItem = null;
 
             if (Array.isArray(data)) {
-                hshItem = data.find(function (item) { return item.GoldType === 'HSH'; }) || data[0];
-                refItem = data.find(function (item) { return item.GoldType === 'REF'; }) || data[1];
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] && data[i].GoldType === 'HSH') {
+                        hshItem = data[i];
+                    }
+                    if (data[i] && data[i].GoldType === 'REF') {
+                        refItem = data[i];
+                    }
+                }
+                if (!hshItem && data[0]) hshItem = data[0];
+                if (!refItem && data[1]) refItem = data[1];
             }
 
             if (hshItem) {
