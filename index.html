@@ -38,26 +38,30 @@
 
         .label {
             color: #9ca3af;
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 32px;
+            font-size: clamp(32px, 8vw, 40px);
             margin-bottom: 1px;
         }
 
         .flex-row {
-            display: block;
+            display: table;
             width: 100%;
-            overflow: hidden;
+            table-layout: fixed;
         }
 
         .flex-col {
-            float: left;
-            width: 48%;
+            display: table-cell;
+            width: 50%;
             vertical-align: middle;
             box-sizing: border-box;
-            margin: 1%;
+            padding: 0 4px;
         }
 
         .divider {
-            display: none;
+            border-left: 1px solid #4b5563;
+            height: 50px;
+            display: table-cell;
+            width: 1px;
         }
 
         .price-red,
@@ -67,10 +71,12 @@
             display: block;
             width: 100%;
             white-space: nowrap;
-            font-size: clamp(18px, 5vw, 42px);
+            font-size: 140px;
+            font-size: clamp(140px, 42vw, 240px);
             font-weight: bold;
             margin: 1px 0;
-            line-height: 1.1;
+            line-height: 1.0;
+            -webkit-text-size-adjust: 100%;
         }
 
         .price-red {
