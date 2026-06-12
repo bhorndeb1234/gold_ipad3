@@ -234,6 +234,10 @@
     </div>
 
     <script>
+        if (location.hostname.indexOf('github.io') !== -1 && !/\bv=/.test(location.search)) {
+            location.replace(location.origin + location.pathname + '?v=' + Date.now());
+        }
+
         var historyChart = null;
         var oldSpotPrice = 0;
         var fxRate = 0;
